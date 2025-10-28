@@ -7,7 +7,8 @@ import Link from "next/link";
 
 const HeroSection = () => {
   const imageRef = useRef(null);
-
+// The scroll image effect is applied to the hero image when the user scrolls down the page.
+// This effect adds a "scrolled" class to the image when the scroll position exceedsthe image's height.
   useEffect(() => {
     const imageElement = imageRef.current;
 
