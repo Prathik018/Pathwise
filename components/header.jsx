@@ -1,5 +1,5 @@
-import React from "react";
-import { Button } from "./ui/button";
+import React from 'react';
+import { Button } from './ui/button';
 import {
   PenBox,
   LayoutDashboard,
@@ -7,17 +7,17 @@ import {
   GraduationCap,
   ChevronDown,
   StarsIcon,
-} from "lucide-react";
-import Link from "next/link";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+} from 'lucide-react';
+import Link from 'next/link';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import Image from "next/image";
-import { checkUser } from "@/lib/checkUser";
+} from '@/components/ui/dropdown-menu';
+import Image from 'next/image';
+import { checkUser } from '@/lib/checkUser';
 
 export default async function Header() {
   await checkUser();
@@ -27,7 +27,7 @@ export default async function Header() {
       <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/">
           <Image
-            src={"/Pathwiselogo2.png"}
+            src={'/Pathwiselogo2.png'}
             alt="Pathwise Logo"
             width={130}
             height={60}
@@ -96,9 +96,9 @@ export default async function Header() {
             <UserButton
               appearance={{
                 elements: {
-                  avatarBox: "w-10 h-10",
-                  userButtonPopoverCard: "shadow-xl",
-                  userPreviewMainIdentifier: "font-semibold",
+                  avatarBox: 'w-10 h-10',
+                  userButtonPopoverCard: 'shadow-xl',
+                  userPreviewMainIdentifier: 'font-semibold',
                 },
               }}
               afterSignOutUrl="/"

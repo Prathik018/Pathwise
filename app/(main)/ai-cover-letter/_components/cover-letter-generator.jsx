@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { generateCoverLetter } from "@/actions/cover-letter";
-import useFetch from "@/hooks/use-fetch";
-import { coverLetterSchema } from "@/app/lib/schema";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { generateCoverLetter } from '@/actions/cover-letter';
+import useFetch from '@/hooks/use-fetch';
+import { coverLetterSchema } from '@/app/lib/schema';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function CoverLetterGenerator() {
   const router = useRouter();
@@ -43,7 +43,7 @@ export default function CoverLetterGenerator() {
   // Update content when letter is generated
   useEffect(() => {
     if (generatedLetter) {
-      toast.success("Cover letter generated successfully!");
+      toast.success('Cover letter generated successfully!');
       router.push(`/ai-cover-letter/${generatedLetter.id}`);
       reset();
     }
@@ -53,7 +53,7 @@ export default function CoverLetterGenerator() {
     try {
       await generateLetterFn(data);
     } catch (error) {
-      toast.error(error.message || "Failed to generate cover letter");
+      toast.error(error.message || 'Failed to generate cover letter');
     }
   };
 
@@ -75,7 +75,7 @@ export default function CoverLetterGenerator() {
                 <Input
                   id="companyName"
                   placeholder="Enter company name"
-                  {...register("companyName")}
+                  {...register('companyName')}
                 />
                 {errors.companyName && (
                   <p className="text-sm text-red-500">
@@ -89,7 +89,7 @@ export default function CoverLetterGenerator() {
                 <Input
                   id="jobTitle"
                   placeholder="Enter job title"
-                  {...register("jobTitle")}
+                  {...register('jobTitle')}
                 />
                 {errors.jobTitle && (
                   <p className="text-sm text-red-500">
@@ -105,7 +105,7 @@ export default function CoverLetterGenerator() {
                 id="jobDescription"
                 placeholder="Paste the job description here"
                 className="h-32"
-                {...register("jobDescription")}
+                {...register('jobDescription')}
               />
               {errors.jobDescription && (
                 <p className="text-sm text-red-500">
@@ -122,7 +122,7 @@ export default function CoverLetterGenerator() {
                     Generating...
                   </>
                 ) : (
-                  "Generate Cover Letter"
+                  'Generate Cover Letter'
                 )}
               </Button>
             </div>

@@ -1,22 +1,22 @@
-"use server";
+'use server';
 
-import { db } from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { revalidatePath } from "next/cache";
+import { db } from '@/lib/prisma';
+import { auth } from '@clerk/nextjs/server';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { revalidatePath } from 'next/cache';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
 
 export async function saveResume(content) {
   const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  if (!userId) throw new Error('Unauthorized');
 
   const user = await db.user.findUnique({
     where: { clerkUserId: userId },
   });
 
-  if (!user) throw new Error("User not found");
+  if (!user) throw new Error('User not found');
 
   try {
     const resume = await db.resume.upsert({
@@ -32,23 +32,23 @@ export async function saveResume(content) {
       },
     });
 
-    revalidatePath("/resume");
+    revalidatePath('/resume');
     return resume;
   } catch (error) {
-    console.error("Error saving resume:", error);
-    throw new Error("Failed to save resume");
+    console.error('Error saving resume:', error);
+    throw new Error('Failed to save resume');
   }
 }
 
 export async function getResume() {
   const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  if (!userId) throw new Error('Unauthorized');
 
   const user = await db.user.findUnique({
     where: { clerkUserId: userId },
   });
 
-  if (!user) throw new Error("User not found");
+  if (!user) throw new Error('User not found');
 
   return await db.resume.findUnique({
     where: {
@@ -59,7 +59,7 @@ export async function getResume() {
 
 export async function improveWithAI({ current, type }) {
   const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  if (!userId) throw new Error('Unauthorized');
 
   const user = await db.user.findUnique({
     where: { clerkUserId: userId },
@@ -68,7 +68,7 @@ export async function improveWithAI({ current, type }) {
     },
   });
 
-  if (!user) throw new Error("User not found");
+  if (!user) throw new Error('User not found');
 
   const prompt = `
     As an expert resume writer, improve the following ${type} description for a ${user.industry} professional.
@@ -92,7 +92,7 @@ export async function improveWithAI({ current, type }) {
     const improvedContent = response.text().trim();
     return improvedContent;
   } catch (error) {
-    console.error("Error improving content:", error);
-    throw new Error("Failed to improve content");
+    console.error('Error improving content:', error);
+    throw new Error('Failed to improve content');
   }
 }

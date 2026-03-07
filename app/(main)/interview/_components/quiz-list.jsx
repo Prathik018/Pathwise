@@ -1,23 +1,23 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { format } from "date-fns";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { format } from 'date-fns';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import QuizResult from "./quiz-result";
+} from '@/components/ui/dialog';
+import QuizResult from './quiz-result';
 
 export default function QuizList({ assessments }) {
   const router = useRouter();
@@ -36,7 +36,7 @@ export default function QuizList({ assessments }) {
                 Review your past quiz performance
               </CardDescription>
             </div>
-            <Button onClick={() => router.push("/interview/mock")}>
+            <Button onClick={() => router.push('/interview/mock')}>
               Start New Quiz
             </Button>
           </div>
@@ -58,7 +58,7 @@ export default function QuizList({ assessments }) {
                     <div>
                       {format(
                         new Date(assessment.createdAt),
-                        "MMMM dd, yyyy HH:mm"
+                        'MMMM dd, yyyy HH:mm',
                       )}
                     </div>
                   </CardDescription>
@@ -84,7 +84,7 @@ export default function QuizList({ assessments }) {
           <QuizResult
             result={selectedQuiz}
             hideStartNew
-            onStartNew={() => router.push("/interview/mock")}
+            onStartNew={() => router.push('/interview/mock')}
           />
         </DialogContent>
       </Dialog>

@@ -1,11 +1,11 @@
-"use server";
+'use server';
 
-import { db } from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { db } from '@/lib/prisma';
+import { auth } from '@clerk/nextjs/server';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
 
 export const generateAIInsights = async (industry) => {
   const prompt = `
@@ -31,14 +31,14 @@ export const generateAIInsights = async (industry) => {
   const result = await model.generateContent(prompt);
   const response = result.response;
   const text = response.text();
-  const cleanedText = text.replace(/```(?:json)?\n?/g, "").trim();
+  const cleanedText = text.replace(/```(?:json)?\n?/g, '').trim();
 
   return JSON.parse(cleanedText);
 };
 
 export async function getIndustryInsights() {
   const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  if (!userId) throw new Error('Unauthorized');
 
   const user = await db.user.findUnique({
     where: { clerkUserId: userId },
@@ -47,7 +47,7 @@ export async function getIndustryInsights() {
     },
   });
 
-  if (!user) throw new Error("User not found");
+  if (!user) throw new Error('User not found');
 
   // If no insights exist, generate them
   if (!user.industryInsight) {

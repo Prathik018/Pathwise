@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 import {
   BarChart,
   Bar,
@@ -9,24 +9,24 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from "recharts";
+} from 'recharts';
 import {
   BriefcaseIcon,
   LineChart,
   TrendingUp,
   TrendingDown,
   Brain,
-} from "lucide-react";
-import { format, formatDistanceToNow } from "date-fns";
+} from 'lucide-react';
+import { format, formatDistanceToNow } from 'date-fns';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 
 const DashboardView = ({ insights }) => {
   // Transform salary data for the chart
@@ -39,27 +39,27 @@ const DashboardView = ({ insights }) => {
 
   const getDemandLevelColor = (level) => {
     switch (level.toLowerCase()) {
-      case "high":
-        return "bg-green-500";
-      case "medium":
-        return "bg-yellow-500";
-      case "low":
-        return "bg-red-500";
+      case 'high':
+        return 'bg-green-500';
+      case 'medium':
+        return 'bg-yellow-500';
+      case 'low':
+        return 'bg-red-500';
       default:
-        return "bg-gray-500";
+        return 'bg-gray-500';
     }
   };
 
   const getMarketOutlookInfo = (outlook) => {
     switch (outlook.toLowerCase()) {
-      case "positive":
-        return { icon: TrendingUp, color: "text-green-500" };
-      case "neutral":
-        return { icon: LineChart, color: "text-yellow-500" };
-      case "negative":
-        return { icon: TrendingDown, color: "text-red-500" };
+      case 'positive':
+        return { icon: TrendingUp, color: 'text-green-500' };
+      case 'neutral':
+        return { icon: LineChart, color: 'text-yellow-500' };
+      case 'negative':
+        return { icon: TrendingDown, color: 'text-red-500' };
       default:
-        return { icon: LineChart, color: "text-gray-500" };
+        return { icon: LineChart, color: 'text-gray-500' };
     }
   };
 
@@ -67,10 +67,10 @@ const DashboardView = ({ insights }) => {
   const outlookColor = getMarketOutlookInfo(insights.marketOutlook).color;
 
   // Format dates using date-fns
-  const lastUpdatedDate = format(new Date(insights.lastUpdated), "dd/MM/yyyy");
+  const lastUpdatedDate = format(new Date(insights.lastUpdated), 'dd/MM/yyyy');
   const nextUpdateDistance = formatDistanceToNow(
     new Date(insights.nextUpdate),
-    { addSuffix: true }
+    { addSuffix: true },
   );
 
   return (
@@ -120,7 +120,7 @@ const DashboardView = ({ insights }) => {
             <div className="text-2xl font-bold">{insights.demandLevel}</div>
             <div
               className={`h-2 w-full rounded-full mt-2 ${getDemandLevelColor(
-                insights.demandLevel
+                insights.demandLevel,
               )}`}
             />
           </CardContent>

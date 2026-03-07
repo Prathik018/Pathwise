@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   LineChart,
@@ -8,16 +8,16 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from "recharts";
+} from 'recharts';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { useEffect, useState } from "react";
-import { format } from "date-fns";
+} from '@/components/ui/card';
+import { useEffect, useState } from 'react';
+import { format } from 'date-fns';
 
 export default function PerformanceChart({ assessments }) {
   const [chartData, setChartData] = useState([]);
@@ -25,7 +25,7 @@ export default function PerformanceChart({ assessments }) {
   useEffect(() => {
     if (assessments) {
       const formattedData = assessments.map((assessment) => ({
-        date: format(new Date(assessment.createdAt), "MMM dd"),
+        date: format(new Date(assessment.createdAt), 'MMM dd'),
         score: assessment.quizScore,
       }));
       setChartData(formattedData);

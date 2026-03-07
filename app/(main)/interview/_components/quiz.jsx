@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { generateQuiz, saveQuizResult } from "@/actions/interview";
-import QuizResult from "./quiz-result";
-import useFetch from "@/hooks/use-fetch";
-import { BarLoader } from "react-spinners";
+} from '@/components/ui/card';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { generateQuiz, saveQuizResult } from '@/actions/interview';
+import QuizResult from './quiz-result';
+import useFetch from '@/hooks/use-fetch';
+import { BarLoader } from 'react-spinners';
 
 export default function Quiz() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -70,9 +70,9 @@ export default function Quiz() {
     const score = calculateScore();
     try {
       await saveQuizResultFn(quizData, answers, score);
-      toast.success("Quiz completed!");
+      toast.success('Quiz completed!');
     } catch (error) {
-      toast.error(error.message || "Failed to save quiz results");
+      toast.error(error.message || 'Failed to save quiz results');
     }
   };
 
@@ -85,7 +85,7 @@ export default function Quiz() {
   };
 
   if (generatingQuiz) {
-    return <BarLoader className="mt-4" width={"100%"} color="gray" />;
+    return <BarLoader className="mt-4" width={'100%'} color="gray" />;
   }
 
   // Show results if quiz is completed
@@ -165,11 +165,11 @@ export default function Quiz() {
           className="ml-auto"
         >
           {savingResult && (
-            <BarLoader className="mt-4" width={"100%"} color="gray" />
+            <BarLoader className="mt-4" width={'100%'} color="gray" />
           )}
           {currentQuestion < quizData.length - 1
-            ? "Next Question"
-            : "Finish Quiz"}
+            ? 'Next Question'
+            : 'Finish Quiz'}
         </Button>
       </CardFooter>
     </Card>

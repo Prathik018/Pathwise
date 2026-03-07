@@ -1,25 +1,25 @@
-import React from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import React from 'react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   ArrowRight,
   Trophy,
   Target,
   Sparkles,
   CheckCircle2,
-} from "lucide-react";
-import HeroSection from "@/components/hero";
+} from 'lucide-react';
+import HeroSection from '@/components/hero';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import Image from "next/image";
-import { features } from "@/data/features";
-import { faqs } from "@/data/faqs";
-import { howItWorks } from "@/data/howItWorks";
+} from '@/components/ui/accordion';
+import Image from 'next/image';
+import { features } from '@/data/features';
+import { faqs } from '@/data/faqs';
+import { howItWorks } from '@/data/howItWorks';
 
 export default function LandingPage() {
   return (
@@ -56,7 +56,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-     
       {/* How It Works Section */}
       <section className="w-full py-12 md:py-24 bg-background">
         <div className="container mx-auto px-4 md:px-6">
@@ -83,8 +82,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
-      
 
       {/* FAQ Section */}
       <section className="w-full py-12 md:py-24">

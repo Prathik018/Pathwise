@@ -1,16 +1,16 @@
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
-import { Toaster } from "sonner";
-import Header from "@/components/header";
-import { ThemeProvider } from "@/components/theme-provider";
-import { dark } from "@clerk/themes";
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { ClerkProvider } from '@clerk/nextjs';
+import { Toaster } from 'sonner';
+import Header from '@/components/header';
+import { ThemeProvider } from '@/components/theme-provider';
+import { dark } from '@clerk/themes';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: "Pathwise ",
-  description: "",
+  title: 'Pathwise ',
+  description: '',
 };
 
 export default function RootLayout({ children }) {
@@ -28,7 +28,8 @@ export default function RootLayout({ children }) {
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
-            enableSystem
+            forcedTheme="dark"
+            enableSystem={false}
             disableTransitionOnChange
           >
             <Header />

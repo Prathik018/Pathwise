@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React from "react";
-import MDEditor from "@uiw/react-md-editor";
+import React from 'react';
+import MDEditor from '@uiw/react-md-editor';
 
 const CoverLetterPreview = ({ content }) => {
   return (

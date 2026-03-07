@@ -1,8 +1,6 @@
-
 # Pathwise: An AI-Driven Career Companion
 
 Pathwise is a full-stack, AI-powered career development platform designed to support users in every step of their professional journey. It offers intelligent tools such as resume builders, cover letter generators, mock interview quizzes, and industry insights, all powered by advanced AI technologies like Google Gemini. The platform is built using a modern tech stack including Next.js, Prisma, and Neon (PostgreSQL), with user authentication managed via Clerk. Its responsive and polished user interface is developed using Shadcn UI and Tailwind CSS. Pathwise streamlines the job preparation process and delivers a personalized experience to help users grow smarter and advance their careers with confidence.
-
 
 ## Features
 
@@ -21,33 +19,40 @@ Pathwise is a full-stack, AI-powered career development platform designed to sup
 - Modern, responsive UI built with Shadcn UI and Tailwind CSS
 
 - Personalized career development experience driven by Google Gemini AI
+
 ## Tech Stack
 
 **Frontend**
+
 - Next.js
 - Tailwind CSS
 - Shadcn UI
 
 **Backend**
+
 - Next.js API Routes
 - Prisma ORM
 - Neon (PostgreSQL)
 
 **Authentication**
+
 - Clerk
 
 **AI Integration**
+
 - Google Gemini API
 
 **Other Tools**
+
 - TypeScript
 - Vercel (for deployment)
 
-
 ## Setup & Installation
+
 To run the WebCompilo locally, follow these steps:
 
 1. Clone the Repository:
+
 ```bash
 https://github.com/Prathik018/Pathwise.git
 cd Pathwise
@@ -55,10 +60,13 @@ cd Pathwise
 ```
 
 2. Download Node Module:
+
 ```bash
-npm install 
+npm install
 ```
+
 3. Make sure to create .env file in root directory with following variabvariables:
+
 ```bash
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
@@ -72,6 +80,7 @@ NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/onboarding
 
 GEMINI_API_KEY=
 ```
+
 ## 🚀 About Me
 
 I’m Prathik Pai, a versatile student with a deep passion for coding, creativity, and cutting-edge technology. I have a strong foundation in C, Java, and Python, coupled with expertise in frontend technologies and Android development, allowing me to build functional and engaging digital experiences.
@@ -94,10 +103,8 @@ I have a deep appreciation for gaming, not just as a player but as someone who a
 🚀 Lifelong Learner & Innovator
 Fueled by curiosity and a growth mindset, I continuously strive to learn, experiment, and contribute to meaningful projects that push the boundaries of technology and creativity.
 
-
 ## 🔗 Links
 
 [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/prathikpai18/)
 [![twitter](https://img.shields.io/badge/twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://x.com/Prathik__Pai)
 [![linkedin](https://img.shields.io/badge/Instagram-%23E4405F.svg?style=for-the-badge&logo=Instagram&logoColor=white)](https://www.instagram.com//prathikk.pai)
-
