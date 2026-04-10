@@ -116,6 +116,12 @@ export default function ResumeBuilder({ initialContent }) {
     setIsGenerating(true);
     try {
       const element = document.getElementById('resume-pdf');
+
+      if (!element) {
+        toast.error('Resume preview is not ready yet. Please try again.');
+        return;
+      }
+
       const opt = {
         margin: [15, 15],
         filename: 'resume.pdf',
@@ -401,19 +407,24 @@ export default function ResumeBuilder({ initialContent }) {
               preview={resumeMode}
             />
           </div>
-          <div className="hidden">
-            <div id="resume-pdf">
-              <MDEditor.Markdown
-                source={previewContent}
-                style={{
-                  background: 'white',
-                  color: 'black',
-                }}
-              />
-            </div>
-          </div>
         </TabsContent>
       </Tabs>
+
+      {/* Keep a dedicated off-screen render target mounted for reliable PDF generation */}
+      <div
+        aria-hidden="true"
+        className="fixed left-0 top-0 w-[850px] bg-white p-6 text-black opacity-0 pointer-events-none -z-10"
+      >
+        <div id="resume-pdf">
+          <MDEditor.Markdown
+            source={previewContent || ''}
+            style={{
+              background: 'white',
+              color: 'black',
+            }}
+          />
+        </div>
+      </div>
     </div>
   );
 }

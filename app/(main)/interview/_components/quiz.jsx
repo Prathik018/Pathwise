@@ -142,6 +142,28 @@ export default function Quiz() {
           ))}
         </RadioGroup>
 
+        <div className="flex items-center gap-2 pt-2">
+          <Button
+            onClick={() => setShowExplanation((prev) => !prev)}
+            variant="outline"
+            disabled={!answers[currentQuestion]}
+          >
+            {showExplanation ? 'Hide Explanation' : 'Show Explanation'}
+          </Button>
+
+          <Button
+            onClick={handleNext}
+            disabled={!answers[currentQuestion] || savingResult}
+          >
+            {savingResult && (
+              <BarLoader className="mt-4" width={'100%'} color="gray" />
+            )}
+            {currentQuestion < quizData.length - 1
+              ? 'Next Question'
+              : 'Finish Quiz'}
+          </Button>
+        </div>
+
         {showExplanation && (
           <div className="mt-4 p-4 bg-muted rounded-lg">
             <p className="font-medium">Explanation:</p>
@@ -149,29 +171,6 @@ export default function Quiz() {
           </div>
         )}
       </CardContent>
-      <CardFooter className="flex justify-between">
-        {!showExplanation && (
-          <Button
-            onClick={() => setShowExplanation(true)}
-            variant="outline"
-            disabled={!answers[currentQuestion]}
-          >
-            Show Explanation
-          </Button>
-        )}
-        <Button
-          onClick={handleNext}
-          disabled={!answers[currentQuestion] || savingResult}
-          className="ml-auto"
-        >
-          {savingResult && (
-            <BarLoader className="mt-4" width={'100%'} color="gray" />
-          )}
-          {currentQuestion < quizData.length - 1
-            ? 'Next Question'
-            : 'Finish Quiz'}
-        </Button>
-      </CardFooter>
     </Card>
   );
 }

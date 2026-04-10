@@ -47,40 +47,6 @@ Pathwise is a full-stack, AI-powered career development platform designed to sup
 - TypeScript
 - Vercel (for deployment)
 
-## Setup & Installation
-
-To run the WebCompilo locally, follow these steps:
-
-1. Clone the Repository:
-
-```bash
-https://github.com/Prathik018/Pathwise.git
-cd Pathwise
-
-```
-
-2. Download Node Module:
-
-```bash
-npm install
-```
-
-3. Make sure to create .env file in root directory with following variabvariables:
-
-```bash
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-CLERK_SECRET_KEY=
-
-DATABASE_URL=
-
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/onboarding
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/onboarding
-
-GEMINI_API_KEY=
-```
-
 ## 🚀 About Me
 
 I’m Prathik Pai, a versatile student with a deep passion for coding, creativity, and cutting-edge technology. I have a strong foundation in C, Java, and Python, coupled with expertise in frontend technologies and Android development, allowing me to build functional and engaging digital experiences.

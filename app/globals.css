@@ -6,6 +6,12 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 :root {
   --grid-line: rgba(255, 255, 255, 0.1);
   --background: 0 0% 3.9%;
@@ -50,6 +56,30 @@ body {
   }
   .gradient-title {
     @apply gradient font-extrabold tracking-tighter text-transparent bg-clip-text pb-2 pr-2;
+  }
+
+  .logo-shimmer {
+    background-image: linear-gradient(
+      110deg,
+      rgb(161 161 170) 25%,
+      rgb(244 244 245) 45%,
+      rgb(212 212 216) 55%,
+      rgb(161 161 170) 75%
+    );
+    background-size: 220% 100%;
+    -webkit-text-fill-color: transparent;
+    animation: logo-shimmer 6s linear infinite;
+    letter-spacing: -0.025em;
+    text-shadow: 0 0 22px rgba(244, 244, 245, 0.2);
+  }
+}
+
+@keyframes logo-shimmer {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -20% center;
   }
 }
 
