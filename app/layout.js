@@ -1,13 +1,18 @@
-import { Inter } from 'next/font/google';
+import { Open_Sans } from 'next/font/google';
 import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from 'sonner';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
+import AppMotionShell from '@/components/app-motion-shell';
 import { ThemeProvider } from '@/components/theme-provider';
 import { dark } from '@clerk/themes';
 
-const inter = Inter({ subsets: ['latin'] });
+const openSans = Open_Sans({
+  subsets: ['latin'],
+  variable: '--font-open-sans',
+  display: 'swap',
+});
 
 export const metadata = {
   title: 'Pathwise ',
@@ -25,7 +30,10 @@ export default function RootLayout({ children }) {
       }}
     >
       <html lang="en" suppressHydrationWarning>
-        <body className={`${inter.className}`}>
+        <body
+          suppressHydrationWarning
+          className={`${openSans.variable} antialiased`}
+        >
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
@@ -34,7 +42,9 @@ export default function RootLayout({ children }) {
             disableTransitionOnChange
           >
             <Header />
-            <main className="min-h-screen">{children}</main>
+            <main className="min-h-screen">
+              <AppMotionShell>{children}</AppMotionShell>
+            </main>
             <Toaster richColors />
             <Footer />
           </ThemeProvider>

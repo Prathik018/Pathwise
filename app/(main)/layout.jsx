@@ -1,10 +1,10 @@
-import React from 'react';
 import { checkUser } from '@/lib/checkUser';
+import DashboardShell from './dashboard/dashboard-shell';
 
 const MainLayout = async ({ children }) => {
   await checkUser();
 
-  return <div className="container mx-auto mt-24 mb-20">{children}</div>;
+  return <DashboardShell>{children}</DashboardShell>;
 };
 
 export default MainLayout;

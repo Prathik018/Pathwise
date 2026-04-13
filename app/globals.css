@@ -3,13 +3,20 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-open-sans), sans-serif;
 }
 
 html,
 body {
   max-width: 100%;
   overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
 }
 
 :root {
@@ -48,6 +55,26 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+  :root {
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+  .dark {
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
 }
 
 @layer utilities {
@@ -55,31 +82,7 @@ body {
     @apply bg-gradient-to-b from-gray-400 via-gray-200 to-gray-600;
   }
   .gradient-title {
-    @apply gradient font-extrabold tracking-tighter text-transparent bg-clip-text pb-2 pr-2;
-  }
-
-  .logo-shimmer {
-    background-image: linear-gradient(
-      110deg,
-      rgb(161 161 170) 25%,
-      rgb(244 244 245) 45%,
-      rgb(212 212 216) 55%,
-      rgb(161 161 170) 75%
-    );
-    background-size: 220% 100%;
-    -webkit-text-fill-color: transparent;
-    animation: logo-shimmer 6s linear infinite;
-    letter-spacing: -0.025em;
-    text-shadow: 0 0 22px rgba(244, 244, 245, 0.2);
-  }
-}
-
-@keyframes logo-shimmer {
-  0% {
-    background-position: 200% center;
-  }
-  100% {
-    background-position: -20% center;
+    @apply gradient font-extrabold text-transparent bg-clip-text pb-1 pr-2;
   }
 }
 

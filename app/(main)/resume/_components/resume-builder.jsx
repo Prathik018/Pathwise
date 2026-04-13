@@ -23,7 +23,6 @@ import useFetch from '@/hooks/use-fetch';
 import { useUser } from '@clerk/nextjs';
 import { entriesToMarkdown } from '@/app/lib/helper';
 import { resumeSchema } from '@/app/lib/schema';
-import html2pdf from 'html2pdf.js/dist/html2pdf.min.js';
 
 export default function ResumeBuilder({ initialContent }) {
   const [activeTab, setActiveTab] = useState('edit');
@@ -130,6 +129,8 @@ export default function ResumeBuilder({ initialContent }) {
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       };
 
+      const html2pdf = (await import('html2pdf.js/dist/html2pdf.min.js'))
+        .default;
       await html2pdf().set(opt).from(element).save();
     } catch (error) {
       console.error('PDF generation error:', error);
@@ -138,14 +139,8 @@ export default function ResumeBuilder({ initialContent }) {
     }
   };
 
-  const onSubmit = async (data) => {
+  const onSubmit = async () => {
     try {
-      const formattedContent = previewContent
-        .replace(/\n/g, '\n') // Normalize newlines
-        .replace(/\n\s*\n/g, '\n\n') // Normalize multiple newlines to double newlines
-        .trim();
-
-      console.log(previewContent, formattedContent);
       await saveResumeFn(previewContent);
     } catch (error) {
       console.error('Save error:', error);

@@ -1,17 +1,10 @@
 'use client';
 
-import React from 'react';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
+import { motion } from 'motion/react';
+import { BarChart, Bar, XAxis, CartesianGrid } from 'recharts';
 import {
   BriefcaseIcon,
+  CalendarClock,
   LineChart,
   TrendingUp,
   TrendingDown,
@@ -27,6 +20,17 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart';
+
+const salaryChartConfig = {
+  min: { label: 'Min Salary (K)', color: '#93c5fd' },
+  median: { label: 'Median Salary (K)', color: '#3b82f6' },
+  max: { label: 'Max Salary (K)', color: '#1d4ed8' },
+};
 
 const DashboardView = ({ insights }) => {
   // Transform salary data for the chart
@@ -73,119 +77,223 @@ const DashboardView = ({ insights }) => {
     { addSuffix: true },
   );
 
+  const normalizeSkill = (skill) =>
+    String(skill || '')
+      .trim()
+      .toLowerCase();
+  const userSkillSet = new Set((insights.userSkills || []).map(normalizeSkill));
+
+  const recommendedSkills = Array.from(
+    new Set([
+      ...(insights.recommendedSkills || []),
+      ...(insights.topSkills || []),
+    ]),
+  ).filter((skill) => !userSkillSet.has(normalizeSkill(skill)));
+
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <Badge variant="outline">Last updated: {lastUpdatedDate}</Badge>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+      className="space-y-8"
+    >
+      {/* Market Overview Cards */}
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge variant="outline" className="gap-1.5">
+          <CalendarClock className="h-3.5 w-3.5" />
+          Last updated: {lastUpdatedDate}
+        </Badge>
+        <Badge variant="secondary">Next update {nextUpdateDistance}</Badge>
       </div>
 
-      {/* Market Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Market Outlook
-            </CardTitle>
-            <OutlookIcon className={`h-4 w-4 ${outlookColor}`} />
+      <motion.div
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: '-40px' }}
+        variants={{
+          hidden: {},
+          show: { transition: { staggerChildren: 0.08 } },
+        }}
+        className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4"
+      >
+        <motion.div
+          variants={{
+            hidden: { opacity: 0, y: 10 },
+            show: { opacity: 1, y: 0 },
+          }}
+        >
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardTitle className="text-sm font-medium">
+                Market Outlook
+              </CardTitle>
+              <OutlookIcon className={`h-4 w-4 ${outlookColor}`} />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-semibold tracking-tight">
+                {insights.marketOutlook}
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Forward-looking trend signal
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          variants={{
+            hidden: { opacity: 0, y: 10 },
+            show: { opacity: 1, y: 0 },
+          }}
+        >
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardTitle className="text-sm font-medium">
+                Industry Growth
+              </CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-semibold tracking-tight">
+                {insights.growthRate.toFixed(1)}%
+              </div>
+              <Progress value={insights.growthRate} className="mt-3" />
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          variants={{
+            hidden: { opacity: 0, y: 10 },
+            show: { opacity: 1, y: 0 },
+          }}
+        >
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardTitle className="text-sm font-medium">
+                Demand Level
+              </CardTitle>
+              <BriefcaseIcon className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-semibold tracking-tight">
+                {insights.demandLevel}
+              </div>
+              <div
+                className={`mt-3 h-2 w-full rounded-full ${getDemandLevelColor(
+                  insights.demandLevel,
+                )}`}
+              />
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          variants={{
+            hidden: { opacity: 0, y: 10 },
+            show: { opacity: 1, y: 0 },
+          }}
+        >
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardTitle className="text-sm font-medium">Top Skills</CardTitle>
+              <Brain className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-1">
+                {insights.topSkills.map((skill) => (
+                  <Badge key={skill} variant="secondary">
+                    {skill}
+                  </Badge>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.35, ease: 'easeOut' }}
+        className="grid grid-cols-1 gap-4 xl:grid-cols-3"
+      >
+        {/* Salary Ranges Chart */}
+        <Card className="xl:col-span-2">
+          <CardHeader>
+            <CardTitle>Salary Ranges by Role</CardTitle>
+            <CardDescription>
+              Displaying minimum, median, and maximum salaries (in thousands)
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{insights.marketOutlook}</div>
-            <p className="text-xs text-muted-foreground">
-              Next update {nextUpdateDistance}
-            </p>
+            <ChartContainer
+              config={salaryChartConfig}
+              className="h-[380px] w-full"
+            >
+              <BarChart accessibilityLayer data={salaryData}>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="name"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="line" />}
+                />
+                <Bar
+                  dataKey="min"
+                  fill="var(--color-min)"
+                  name="Min Salary (K)"
+                  radius={4}
+                />
+                <Bar
+                  dataKey="median"
+                  fill="var(--color-median)"
+                  name="Median Salary (K)"
+                  radius={4}
+                />
+                <Bar
+                  dataKey="max"
+                  fill="var(--color-max)"
+                  name="Max Salary (K)"
+                  radius={4}
+                />
+              </BarChart>
+            </ChartContainer>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Industry Growth
-            </CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          <CardHeader>
+            <CardTitle>Recommended Skills</CardTitle>
+            <CardDescription>
+              Skills to consider developing ({recommendedSkills.length})
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {insights.growthRate.toFixed(1)}%
-            </div>
-            <Progress value={insights.growthRate} className="mt-2" />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Demand Level</CardTitle>
-            <BriefcaseIcon className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{insights.demandLevel}</div>
-            <div
-              className={`h-2 w-full rounded-full mt-2 ${getDemandLevelColor(
-                insights.demandLevel,
-              )}`}
-            />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Top Skills</CardTitle>
-            <Brain className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-1">
-              {insights.topSkills.map((skill) => (
-                <Badge key={skill} variant="secondary">
+            <div className="flex flex-wrap gap-2">
+              {recommendedSkills.map((skill) => (
+                <Badge key={skill} variant="outline">
                   {skill}
                 </Badge>
               ))}
             </div>
           </CardContent>
         </Card>
-      </div>
-
-      {/* Salary Ranges Chart */}
-      <Card className="col-span-4">
-        <CardHeader>
-          <CardTitle>Salary Ranges by Role</CardTitle>
-          <CardDescription>
-            Displaying minimum, median, and maximum salaries (in thousands)
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[400px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={salaryData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip
-                  content={({ active, payload, label }) => {
-                    if (active && payload && payload.length) {
-                      return (
-                        <div className="bg-background border rounded-lg p-2 shadow-md">
-                          <p className="font-medium">{label}</p>
-                          {payload.map((item) => (
-                            <p key={item.name} className="text-sm">
-                              {item.name}: ${item.value}K
-                            </p>
-                          ))}
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-                <Bar dataKey="min" fill="#94a3b8" name="Min Salary (K)" />
-                <Bar dataKey="median" fill="#64748b" name="Median Salary (K)" />
-                <Bar dataKey="max" fill="#475569" name="Max Salary (K)" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+      </motion.div>
 
       {/* Industry Trends */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.35, ease: 'easeOut' }}
+        className="grid grid-cols-1 gap-4"
+      >
         <Card>
           <CardHeader>
             <CardTitle>Key Industry Trends</CardTitle>
@@ -194,34 +302,21 @@ const DashboardView = ({ insights }) => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-4">
+            <ul className="space-y-3">
               {insights.keyTrends.map((trend, index) => (
-                <li key={index} className="flex items-start space-x-2">
-                  <div className="h-2 w-2 mt-2 rounded-full bg-primary" />
-                  <span>{trend}</span>
+                <li
+                  key={index}
+                  className="flex items-start gap-3 rounded-lg border bg-muted/20 p-3"
+                >
+                  <div className="mt-1 h-2 w-2 rounded-full bg-primary" />
+                  <span className="text-sm leading-relaxed">{trend}</span>
                 </li>
               ))}
             </ul>
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Recommended Skills</CardTitle>
-            <CardDescription>Skills to consider developing</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-2">
-              {insights.recommendedSkills.map((skill) => (
-                <Badge key={skill} variant="outline">
-                  {skill}
-                </Badge>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
