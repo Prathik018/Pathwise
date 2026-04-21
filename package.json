@@ -34,7 +34,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "html2pdf.js": "^0.14.0",
-    "inngest": "^3.29.3",
+    "inngest": "^4.2.4",
     "lucide-react": "^1.8.0",
     "motion": "^12.38.0",
     "next": "^16.2.3",
