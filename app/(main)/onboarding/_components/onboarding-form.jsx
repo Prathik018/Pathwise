@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
+import { Loader2, X, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Card,
@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import useFetch from '@/hooks/use-fetch';
 import { onboardingSchema } from '@/app/lib/schema';
 import { updateUser } from '@/actions/user';
@@ -33,6 +34,9 @@ import { updateUser } from '@/actions/user';
 const OnboardingForm = ({ industries }) => {
   const router = useRouter();
   const [selectedIndustry, setSelectedIndustry] = useState(null);
+  const [skillName, setSkillName] = useState('');
+  const [skillLevel, setSkillLevel] = useState('');
+  const [skillEntries, setSkillEntries] = useState([]);
 
   const {
     loading: updateLoading,
@@ -48,7 +52,22 @@ const OnboardingForm = ({ industries }) => {
     watch,
   } = useForm({
     resolver: zodResolver(onboardingSchema),
+    defaultValues: {
+      skills: [],
+    },
   });
+
+  const addSkill = () => {
+    const trimmed = skillName.trim();
+    if (!trimmed || !skillLevel) return;
+    setSkillEntries((prev) => [...prev, { name: trimmed, level: skillLevel }]);
+    setSkillName('');
+    setSkillLevel('');
+  };
+
+  const removeSkill = (index) => {
+    setSkillEntries((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const onSubmit = async (values) => {
     try {
@@ -64,6 +83,10 @@ const OnboardingForm = ({ industries }) => {
       console.error('Onboarding error:', error);
     }
   };
+
+  useEffect(() => {
+    setValue('skills', skillEntries);
+  }, [skillEntries, setValue]);
 
   useEffect(() => {
     if (updateResult?.success && !updateLoading) {
@@ -167,15 +190,64 @@ const OnboardingForm = ({ industries }) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="skills">Skills</Label>
-              <Input
-                id="skills"
-                placeholder="e.g., Python, JavaScript, Project Management"
-                {...register('skills')}
-              />
-              <p className="text-sm text-muted-foreground">
-                Separate multiple skills with commas
-              </p>
+              <Label>Skills</Label>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="e.g., Python"
+                  value={skillName}
+                  onChange={(e) => setSkillName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      addSkill();
+                    }
+                  }}
+                />
+                <Select value={skillLevel} onValueChange={setSkillLevel}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="beginner">Beginner</SelectItem>
+                    <SelectItem value="intermediate">Intermediate</SelectItem>
+                    <SelectItem value="advanced">Advanced</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={addSkill}
+                  disabled={!skillName.trim() || !skillLevel}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+
+              {skillEntries.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {skillEntries.map((skill, index) => (
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="flex items-center gap-1 px-3 py-1"
+                    >
+                      <span>{skill.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        ({skill.level})
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => removeSkill(index)}
+                        className="ml-1 hover:text-destructive"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+
               {errors.skills && (
                 <p className="text-sm text-red-500">{errors.skills.message}</p>
               )}
