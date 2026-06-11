@@ -94,28 +94,34 @@ export async function getIndustryInsights() {
       },
     });
 
+    const userSkillNames = (user.skills || []).map((s) =>
+      typeof s === 'string' ? s : s.name,
+    );
     const personalizedRecommendedSkills = buildPersonalizedRecommendedSkills({
       recommendedSkills: industryInsight.recommendedSkills,
       topSkills: industryInsight.topSkills,
-      userSkills: user.skills,
+      userSkills: userSkillNames,
     });
 
     return {
       ...industryInsight,
-      userSkills: user.skills,
+      userSkills: userSkillNames,
       recommendedSkills: personalizedRecommendedSkills,
     };
   }
 
+  const userSkillNames = (user.skills || []).map((s) =>
+    typeof s === 'string' ? s : s.name,
+  );
   const personalizedRecommendedSkills = buildPersonalizedRecommendedSkills({
     recommendedSkills: user.industryInsight.recommendedSkills,
     topSkills: user.industryInsight.topSkills,
-    userSkills: user.skills,
+    userSkills: userSkillNames,
   });
 
   return {
     ...user.industryInsight,
-    userSkills: user.skills,
+    userSkills: userSkillNames,
     recommendedSkills: personalizedRecommendedSkills,
   };
 }

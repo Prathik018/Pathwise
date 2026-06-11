@@ -21,12 +21,20 @@ export async function generateQuiz() {
 
   if (!user) throw new Error('User not found');
 
+  const skillDescriptions = (user.skills || [])
+    .map((s) => {
+      const name = typeof s === 'string' ? s : s.name;
+      const level = typeof s === 'string' ? 'beginner' : s.level || 'beginner';
+      return `${name} (${level})`;
+    })
+    .join(', ');
+
   const prompt = `
     Generate 10 technical interview questions for a ${
       user.industry
-    } professional${
-      user.skills?.length ? ` with expertise in ${user.skills.join(', ')}` : ''
-    }.
+    } professional with the following skills and their expertise levels: ${skillDescriptions}.
+    
+    For each skill, match the question difficulty to the specified expertise level (beginner, intermediate, or advanced).
     
     Each question should be multiple choice with 4 options.
     
