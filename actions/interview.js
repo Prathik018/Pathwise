@@ -5,7 +5,7 @@ import { auth } from '@clerk/nextjs/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
+const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite' });
 
 export async function generateQuiz() {
   const { userId } = await auth();
@@ -48,12 +48,18 @@ export async function generateQuiz() {
     const response = result.response;
     const text = response.text();
     const cleanedText = text.replace(/```(?:json)?\n?/g, '').trim();
-    const quiz = JSON.parse(cleanedText);
+    const jsonStart = cleanedText.indexOf('{');
+    const jsonEnd = cleanedText.lastIndexOf('}');
+    const jsonStr =
+      jsonStart !== -1 && jsonEnd !== -1
+        ? cleanedText.slice(jsonStart, jsonEnd + 1)
+        : cleanedText;
+    const quiz = JSON.parse(jsonStr);
 
     return quiz.questions;
   } catch (error) {
-    console.error('Error generating quiz:', error);
-    throw new Error('Failed to generate quiz questions');
+    console.error('Error generating quiz:', error.message, error.stack);
+    throw new Error('Failed to generate quiz questions: ' + error.message);
   }
 }
 

@@ -31,7 +31,9 @@ export const contactSchema = z.object({
   email: z.string().email('Invalid email address'),
   mobile: z.string().optional(),
   linkedin: z.string().optional(),
-  twitter: z.string().optional(),
+  github: z.string().optional(),
+  portfolio: z.string().optional(),
+  codingProfile: z.string().optional(),
 });
 
 export const entrySchema = z
@@ -56,6 +58,14 @@ export const entrySchema = z
     },
   );
 
+export const customSectionSchema = z.object({
+  heading: z.string().min(1, 'Section heading is required'),
+  title: z.string().min(1, 'Title is required'),
+  date: z.string().optional(),
+  link: z.string().optional(),
+  description: z.string().optional(),
+});
+
 export const resumeSchema = z.object({
   contactInfo: contactSchema,
   summary: z.string().min(1, 'Professional summary is required'),
@@ -63,6 +73,7 @@ export const resumeSchema = z.object({
   experience: z.array(entrySchema),
   education: z.array(entrySchema),
   projects: z.array(entrySchema),
+  customSections: z.array(customSectionSchema),
 });
 
 export const coverLetterSchema = z.object({

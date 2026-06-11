@@ -1,8 +1,7 @@
-// app/resume/_components/entry-form.jsx
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useEffect, useState, useCallback } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format, parse } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -16,7 +15,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { entrySchema } from '@/app/lib/schema';
-import { Sparkles, PlusCircle, X, Pencil, Save, Loader2 } from 'lucide-react';
+import { Sparkles, PlusCircle, X, Pencil, Loader2 } from 'lucide-react';
 import { improveWithAI } from '@/actions/resume';
 import { toast } from 'sonner';
 import useFetch from '@/hooks/use-fetch';
@@ -27,10 +26,19 @@ const formatDisplayDate = (dateString) => {
   return format(date, 'MMM yyyy');
 };
 
+const parseMonthValue = (displayDate) => {
+  if (!displayDate) return '';
+  const date = parse(displayDate, 'MMM yyyy', new Date());
+  if (isNaN(date.getTime())) return '';
+  return format(date, 'yyyy-MM');
+};
+
 export function EntryForm({ type, entries, onChange }) {
   const [isAdding, setIsAdding] = useState(false);
+  const [editingIndex, setEditingIndex] = useState(null);
 
   const {
+    control,
     register,
     handleSubmit: handleValidation,
     formState: { errors },
@@ -51,6 +59,30 @@ export function EntryForm({ type, entries, onChange }) {
 
   const current = watch('current');
 
+  const resetForm = useCallback(() => {
+    reset({
+      title: '',
+      organization: '',
+      startDate: '',
+      endDate: '',
+      description: '',
+      current: false,
+    });
+    setEditingIndex(null);
+  }, [reset]);
+
+  const startEditing = (index) => {
+    const entry = entries[index];
+    setValue('title', entry.title || '');
+    setValue('organization', entry.organization || '');
+    setValue('startDate', parseMonthValue(entry.startDate));
+    setValue('endDate', parseMonthValue(entry.endDate));
+    setValue('description', entry.description || '');
+    setValue('current', entry.current || false);
+    setEditingIndex(index);
+    setIsAdding(true);
+  };
+
   const handleAdd = handleValidation((data) => {
     const formattedEntry = {
       ...data,
@@ -58,15 +90,21 @@ export function EntryForm({ type, entries, onChange }) {
       endDate: data.current ? '' : formatDisplayDate(data.endDate),
     };
 
-    onChange([...entries, formattedEntry]);
+    if (editingIndex !== null) {
+      const updated = [...entries];
+      updated[editingIndex] = formattedEntry;
+      onChange(updated);
+      toast.success('Entry updated');
+    } else {
+      onChange([...entries, formattedEntry]);
+    }
 
-    reset();
+    resetForm();
     setIsAdding(false);
   });
 
   const handleDelete = (index) => {
-    const newEntries = entries.filter((_, i) => i !== index);
-    onChange(newEntries);
+    onChange(entries.filter((_, i) => i !== index));
   };
 
   const {
@@ -76,7 +114,6 @@ export function EntryForm({ type, entries, onChange }) {
     error: improveError,
   } = useFetch(improveWithAI);
 
-  // Add this effect to handle the improvement result
   useEffect(() => {
     if (improvedContent && !isImproving) {
       setValue('description', improvedContent);
@@ -87,7 +124,6 @@ export function EntryForm({ type, entries, onChange }) {
     }
   }, [improvedContent, improveError, isImproving, setValue]);
 
-  // Replace handleImproveDescription with this
   const handleImproveDescription = async () => {
     const description = watch('description');
     if (!description) {
@@ -97,7 +133,7 @@ export function EntryForm({ type, entries, onChange }) {
 
     await improveWithAIFn({
       current: description,
-      type: type.toLowerCase(), // 'experience', 'education', or 'project'
+      type: type.toLowerCase(),
     });
   };
 
@@ -110,14 +146,24 @@ export function EntryForm({ type, entries, onChange }) {
               <CardTitle className="text-sm font-medium">
                 {item.title} @ {item.organization}
               </CardTitle>
-              <Button
-                variant="outline"
-                size="icon"
-                type="button"
-                onClick={() => handleDelete(index)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
+              <div className="flex gap-1">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  type="button"
+                  onClick={() => startEditing(index)}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  type="button"
+                  onClick={() => handleDelete(index)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
@@ -136,7 +182,9 @@ export function EntryForm({ type, entries, onChange }) {
       {isAdding && (
         <Card>
           <CardHeader>
-            <CardTitle>Add {type}</CardTitle>
+            <CardTitle>
+              {editingIndex !== null ? `Edit ${type}` : `Add ${type}`}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -245,7 +293,7 @@ export function EntryForm({ type, entries, onChange }) {
               type="button"
               variant="outline"
               onClick={() => {
-                reset();
+                resetForm();
                 setIsAdding(false);
               }}
             >
@@ -253,7 +301,7 @@ export function EntryForm({ type, entries, onChange }) {
             </Button>
             <Button type="button" onClick={handleAdd}>
               <PlusCircle className="h-4 w-4 mr-2" />
-              Add Entry
+              {editingIndex !== null ? 'Update Entry' : 'Add Entry'}
             </Button>
           </CardFooter>
         </Card>

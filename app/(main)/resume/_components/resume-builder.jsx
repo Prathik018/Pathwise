@@ -3,22 +3,16 @@
 import { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  AlertTriangle,
-  Download,
-  Edit,
-  Loader2,
-  Monitor,
-  Save,
-} from 'lucide-react';
+import { Download, Eye, Loader2, Save } from 'lucide-react';
 import { toast } from 'sonner';
-import MDEditor from '@uiw/react-md-editor';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { saveResume } from '@/actions/resume';
 import { EntryForm } from './entry-form';
+import { CustomSectionForm } from './custom-section-form';
+import ResumePreview from './resume-preview';
 import useFetch from '@/hooks/use-fetch';
 import { useUser } from '@clerk/nextjs';
 import { entriesToMarkdown } from '@/app/lib/helper';
@@ -26,9 +20,7 @@ import { resumeSchema } from '@/app/lib/schema';
 
 export default function ResumeBuilder({ initialContent }) {
   const [activeTab, setActiveTab] = useState('edit');
-  const [previewContent, setPreviewContent] = useState(initialContent);
   const { user } = useUser();
-  const [resumeMode, setResumeMode] = useState('preview');
 
   const {
     control,
@@ -45,6 +37,7 @@ export default function ResumeBuilder({ initialContent }) {
       experience: [],
       education: [],
       projects: [],
+      customSections: [],
     },
   });
 
@@ -55,22 +48,12 @@ export default function ResumeBuilder({ initialContent }) {
     error: saveError,
   } = useFetch(saveResume);
 
-  // Watch form fields for preview updates
   const formValues = watch();
 
   useEffect(() => {
     if (initialContent) setActiveTab('preview');
   }, [initialContent]);
 
-  // Update preview content when form values change
-  useEffect(() => {
-    if (activeTab === 'edit') {
-      const newContent = getCombinedContent();
-      setPreviewContent(newContent ? newContent : initialContent);
-    }
-  }, [formValues, activeTab]);
-
-  // Handle save result
   useEffect(() => {
     if (saveResult && !isSaving) {
       toast.success('Resume saved successfully!');
@@ -83,30 +66,47 @@ export default function ResumeBuilder({ initialContent }) {
   const getContactMarkdown = () => {
     const { contactInfo } = formValues;
     const parts = [];
-    if (contactInfo.email) parts.push(`📧 ${contactInfo.email}`);
-    if (contactInfo.mobile) parts.push(`📱 ${contactInfo.mobile}`);
-    if (contactInfo.linkedin)
-      parts.push(`💼 [LinkedIn](${contactInfo.linkedin})`);
-    if (contactInfo.twitter) parts.push(`🐦 [Twitter](${contactInfo.twitter})`);
+    if (contactInfo.email) parts.push(contactInfo.email);
+    if (contactInfo.mobile) parts.push(contactInfo.mobile);
+    if (contactInfo.linkedin) parts.push(`[LinkedIn](${contactInfo.linkedin})`);
+    if (contactInfo.github) parts.push(`[GitHub](${contactInfo.github})`);
+    if (contactInfo.portfolio)
+      parts.push(`[Portfolio](${contactInfo.portfolio})`);
+    if (contactInfo.codingProfile)
+      parts.push(`[Coding Profile](${contactInfo.codingProfile})`);
 
     return parts.length > 0
-      ? `## <div align="center">${user.fullName}</div>
-        \n\n<div align="center">\n\n${parts.join(' | ')}\n\n</div>`
+      ? `# ${user?.fullName || 'Your Name'}\n\n${parts.join(' | ')}`
       : '';
   };
 
   const getCombinedContent = () => {
-    const { summary, skills, experience, education, projects } = formValues;
-    return [
+    const { summary, skills, experience, education, projects, customSections } =
+      formValues;
+
+    const sections = [
       getContactMarkdown(),
       summary && `## Professional Summary\n\n${summary}`,
       skills && `## Skills\n\n${skills}`,
       entriesToMarkdown(experience, 'Work Experience'),
       entriesToMarkdown(education, 'Education'),
       entriesToMarkdown(projects, 'Projects'),
-    ]
-      .filter(Boolean)
-      .join('\n\n');
+    ];
+
+    if (customSections?.length > 0) {
+      customSections.forEach((section) => {
+        const lines = [`## ${section.heading}`];
+        const items = [];
+        if (section.title) items.push(`**${section.title}**`);
+        if (section.date) items.push(section.date);
+        if (section.link) items.push(`[link](${section.link})`);
+        if (section.description) items.push(section.description);
+        if (items.length > 0) lines.push(items.join(' | '));
+        sections.push(lines.join('\n\n'));
+      });
+    }
+
+    return sections.filter(Boolean).join('\n\n');
   };
 
   const [isGenerating, setIsGenerating] = useState(false);
@@ -122,7 +122,7 @@ export default function ResumeBuilder({ initialContent }) {
       }
 
       const opt = {
-        margin: [15, 15],
+        margin: 0,
         filename: 'resume.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2 },
@@ -141,7 +141,8 @@ export default function ResumeBuilder({ initialContent }) {
 
   const onSubmit = async () => {
     try {
-      await saveResumeFn(previewContent);
+      const markdown = getCombinedContent();
+      await saveResumeFn(markdown);
     } catch (error) {
       console.error('Save error:', error);
     }
@@ -153,7 +154,7 @@ export default function ResumeBuilder({ initialContent }) {
         <h1 className="font-bold gradient-title text-5xl md:text-6xl">
           Resume Builder
         </h1>
-        <div className="space-x-2">
+        <div className="space-x-2 flex">
           <Button
             variant="destructive"
             onClick={handleSubmit(onSubmit)}
@@ -190,12 +191,14 @@ export default function ResumeBuilder({ initialContent }) {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="edit">Form</TabsTrigger>
-          <TabsTrigger value="preview">Markdown</TabsTrigger>
+          <TabsTrigger value="preview">
+            <Eye className="h-4 w-4 mr-1" />
+            Preview
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="edit">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-            {/* Contact Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Contact Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg bg-muted/50">
@@ -240,24 +243,34 @@ export default function ResumeBuilder({ initialContent }) {
                   )}
                 </div>
                 <div className="space-y-2">
+                  <label className="text-sm font-medium">GitHub URL</label>
+                  <Input
+                    {...register('contactInfo.github')}
+                    type="url"
+                    placeholder="https://github.com/your-username"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Portfolio URL</label>
+                  <Input
+                    {...register('contactInfo.portfolio')}
+                    type="url"
+                    placeholder="https://your-portfolio.com"
+                  />
+                </div>
+                <div className="space-y-2">
                   <label className="text-sm font-medium">
-                    Twitter/X Profile
+                    Coding Profile URL
                   </label>
                   <Input
-                    {...register('contactInfo.twitter')}
+                    {...register('contactInfo.codingProfile')}
                     type="url"
-                    placeholder="https://twitter.com/your-handle"
+                    placeholder="https://leetcode.com/u/your-username"
                   />
-                  {errors.contactInfo?.twitter && (
-                    <p className="text-sm text-red-500">
-                      {errors.contactInfo.twitter.message}
-                    </p>
-                  )}
                 </div>
               </div>
             </div>
 
-            {/* Summary */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Professional Summary</h3>
               <Controller
@@ -277,7 +290,6 @@ export default function ResumeBuilder({ initialContent }) {
               )}
             </div>
 
-            {/* Skills */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Skills</h3>
               <Controller
@@ -287,7 +299,7 @@ export default function ResumeBuilder({ initialContent }) {
                   <Textarea
                     {...field}
                     className="h-32"
-                    placeholder="List your key skills..."
+                    placeholder="Programming Languages: JavaScript, TypeScript, Python&#10;Frameworks & Libraries: React, Next.js, Node.js&#10;Developer Tools: Git, Docker, AWS"
                     error={errors.skills}
                   />
                 )}
@@ -297,7 +309,6 @@ export default function ResumeBuilder({ initialContent }) {
               )}
             </div>
 
-            {/* Experience */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Work Experience</h3>
               <Controller
@@ -318,7 +329,6 @@ export default function ResumeBuilder({ initialContent }) {
               )}
             </div>
 
-            {/* Education */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Education</h3>
               <Controller
@@ -339,7 +349,6 @@ export default function ResumeBuilder({ initialContent }) {
               )}
             </div>
 
-            {/* Projects */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Projects</h3>
               <Controller
@@ -359,64 +368,42 @@ export default function ResumeBuilder({ initialContent }) {
                 </p>
               )}
             </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Custom Sections</h3>
+              <Controller
+                name="customSections"
+                control={control}
+                render={({ field }) => (
+                  <CustomSectionForm
+                    entries={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+            </div>
           </form>
         </TabsContent>
 
         <TabsContent value="preview">
-          {activeTab === 'preview' && (
-            <Button
-              variant="link"
-              type="button"
-              className="mb-2"
-              onClick={() =>
-                setResumeMode(resumeMode === 'preview' ? 'edit' : 'preview')
-              }
-            >
-              {resumeMode === 'preview' ? (
-                <>
-                  <Edit className="h-4 w-4" />
-                  Edit Resume
-                </>
-              ) : (
-                <>
-                  <Monitor className="h-4 w-4" />
-                  Show Preview
-                </>
-              )}
-            </Button>
-          )}
-
-          {activeTab === 'preview' && resumeMode !== 'preview' && (
-            <div className="flex p-3 gap-2 items-center border-2 border-yellow-600 text-yellow-600 rounded mb-2">
-              <AlertTriangle className="h-5 w-5" />
-              <span className="text-sm">
-                You will lose editied markdown if you update the form data.
-              </span>
-            </div>
-          )}
-          <div className="border rounded-lg">
-            <MDEditor
-              value={previewContent}
-              onChange={setPreviewContent}
-              height={800}
-              preview={resumeMode}
-            />
+          <div className="border rounded-lg overflow-hidden shadow-sm">
+            <ResumePreview formValues={formValues} userName={user?.fullName} />
           </div>
         </TabsContent>
       </Tabs>
 
-      {/* Keep a dedicated off-screen render target mounted for reliable PDF generation */}
       <div
         aria-hidden="true"
-        className="fixed left-0 top-0 w-[850px] bg-white p-6 text-black opacity-0 pointer-events-none -z-10"
+        className="fixed left-0 top-0 opacity-0 pointer-events-none -z-10"
       >
-        <div id="resume-pdf">
-          <MDEditor.Markdown
-            source={previewContent || ''}
-            style={{
-              background: 'white',
-              color: 'black',
-            }}
+        <div
+          id="resume-pdf"
+          style={{ width: '210mm', background: 'white', padding: '10mm' }}
+        >
+          <ResumePreview
+            formValues={formValues}
+            userName={user?.fullName}
+            isPdf
           />
         </div>
       </div>
