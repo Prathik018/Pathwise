@@ -14,14 +14,28 @@ const HeroSection = () => {
     const imageElement = imageRef.current;
     if (!imageElement) return;
 
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      const scrollThreshold = 100;
+    let ticking = false;
+    let isScrolled = false;
 
-      if (scrollPosition > scrollThreshold) {
-        imageElement.classList.add('scrolled');
-      } else {
-        imageElement.classList.remove('scrolled');
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollPosition = window.scrollY;
+          const scrollThreshold = 100;
+          const shouldBeScrolled = scrollPosition > scrollThreshold;
+
+          if (shouldBeScrolled !== isScrolled) {
+            isScrolled = shouldBeScrolled;
+            if (isScrolled) {
+              imageElement.classList.add('scrolled');
+            } else {
+              imageElement.classList.remove('scrolled');
+            }
+          }
+
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
